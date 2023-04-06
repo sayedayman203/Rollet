@@ -1,43 +1,39 @@
 // Modules
 const mongoose = require("mongoose");
-const slug = require("mongoose-slug-generator");
 
 // init
 const dbURL = process.env.DB;
 
 // Connect and listen
-const connect = () => {
-	mongoose
-		.connect(dbURL, {
-			useNewUrlParser: true,
-			useUnifiedTopology: true,
-			useFindAndModify: false,
-			useCreateIndex: true,
-		})
-		.then(() => {
-			console.log(`DB Connected.`);
-		})
-		.catch((err) => {
-			console.log(
-				`Mongoose default connection has occured ${err} error.`
-			);
-		});
+const connect = async () => {
+  try {
+    await mongoose.connect(dbURL, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useFindAndModify: false,
+      useCreateIndex: true,
+    });
+    console.log(`DB Connected.`);
 
-	mongoose.plugin(slug);
+    mongoose.connection.on("disconnected", () => {
+      console.log("Mongoose default connection is disconnected.");
+    });
 
-	mongoose.connection.on("disconnected", () => {
-		console.log("Mongoose default connection is disconnected.");
-	});
-
-	process.on("SIGINT", () => {
-		mongoose.connection.close(() => {
-			console.log(
-				"Mongoose default connection is disconnected due to application termination."
-			);
-			process.exit(0);
-		});
-	});
+    process.on("SIGINT", () => {
+      mongoose.connection.close(() => {
+        console.log(
+          "Mongoose default connection is disconnected due to application termination."
+        );
+        process.exit(0);
+      });
+    });
+  } catch (err) {
+    console.log(`Mongoose default connection has occured ${err} error.`);
+  }
 };
 
+const disconnect = async () => {
+  await mongoose.disconnect();
+};
 // Export
-module.exports = { connect };
+module.exports = { connect, disconnect };
