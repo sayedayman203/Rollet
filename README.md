@@ -2,10 +2,11 @@
 
 # .env
 
--   DB
--   JWTSecret
--   PORT
+- DB
+- JWTSecret
+- PORT
 
 # Admin Panel
+
 https://rollet-site.herokuapp.com/admin \
-UserName: admin | Password: 01150
+UserName: admin | Password: 0
